@@ -1,0 +1,22 @@
+name: Backend CI/CD
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Backend Environment
+        run: echo "Setting up backend environment..."
+
+      - name: Run Backend Tests
+        run: echo "Running backend tests..."
+
+      - name: Deploy Backend
+        run: echo "Deploying backend..."
