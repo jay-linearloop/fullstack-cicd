@@ -19,6 +19,7 @@ jobs:
 
       - name: Initialize New Git Repository
         run: |
+          git init
           git add .
           git commit -m "Sync latest source code from GitHub"
 
