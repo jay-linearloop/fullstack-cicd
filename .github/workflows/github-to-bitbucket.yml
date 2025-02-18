@@ -1,0 +1,37 @@
+name: Sync Source Code to Bitbucket
+
+on:
+  push:
+    branches:
+      - main  # Trigger only when the main branch is updated
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the latest code
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Remove Git History
+        run: rm -rf .git
+
+      - name: Initialize New Git Repository
+        run: |
+          git init
+          git add .
+          git commit -m "Sync latest source code from GitHub"
+
+      - name: Push to Existing Bitbucket Repo
+        env:
+          BITBUCKET_SSH_KEY: ${{ secrets.BITBUCKET_SSH_KEY }}
+          BITBUCKET_REPO: "git@bitbucket.org:react-demo-test/github-to-bitbucket.git"  # Update this with your repo URL
+        run: |
+          mkdir -p ~/.ssh
+          echo "$BITBUCKET_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts
+          git remote add origin $BITBUCKET_REPO
+          git branch -M main
+          git push -f origin main  # Force push to overwrite only main branch
