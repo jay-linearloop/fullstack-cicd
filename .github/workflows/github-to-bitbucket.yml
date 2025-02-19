@@ -1,9 +1,12 @@
 name: Sync Source Code to Bitbucket
 
+# on:
+#   push:
+#     branches:
+#       - main  # Trigger only when the main branch is updated
+
 on:
-  push:
-    branches:
-      - main  # Trigger only when the main branch is updated
+  workflow_dispatch:
 
 jobs:
   sync:
