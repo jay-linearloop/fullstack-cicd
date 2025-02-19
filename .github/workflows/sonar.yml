@@ -40,7 +40,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0  # Needed for accurate analysis
+          fetch-depth: 0
 
       - name: Run SonarQube Scan
         uses: sonarsource/sonarqube-scan-action@master
@@ -48,22 +48,21 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
-      # Optional: Fail the job if Quality Gate fails
-      # - name: SonarQube Quality Gate
-      #   uses: sonarsource/sonarqube-quality-gate-action@master
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
       - name: Install jq
         run: sudo apt-get install -y jq
 
       - name: Download SonarQube Report
         run: |
-          curl -u "${{ secrets.SONAR_USER }}:${{ secrets.SONAR_PASSWORD }}" \
-          "${{ secrets.SONAR_HOST_URL }}/api/issues/search?componentKeys=test-github-code-review" -o sonar_report.json
+          # Wait for analysis to complete
+          sleep 10
           
-          jq -r '.issues[] | [.key, .message, .severity, .type] | @csv' sonar_report.json > sonar_report.csv
+          PROJECT_KEY="${{ github.repository_owner }}-${{ github.repository }}"
+          
+          curl -u "${{ secrets.SONAR_TOKEN }}:" \
+          "${{ secrets.SONAR_HOST_URL }}/api/issues/search?componentKeys=${PROJECT_KEY}&types=BUG,VULNERABILITY,CODE_SMELL&resolved=false" \
+          -o sonar_report.json
+          
+          jq -r '.issues[] | [.key, .component, .message, .severity, .type, .line] | @csv' sonar_report.json > sonar_report.csv
 
       - name: Upload SonarQube Report as Artifact
         uses: actions/upload-artifact@v3
