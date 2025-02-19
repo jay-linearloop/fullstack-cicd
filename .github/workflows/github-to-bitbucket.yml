@@ -49,7 +49,7 @@ name: Sync Source Code to Bitbucket
 on:
   push:
     branches:
-      - master  # Manual trigger (change if needed)
+      - main  # Manual trigger (change if needed)
 
 jobs:
   sync:
