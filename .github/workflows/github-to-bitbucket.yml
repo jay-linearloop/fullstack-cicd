@@ -65,7 +65,7 @@ jobs:
 
       - name: Create .gitignore to Exclude Files but Keep .github
         run: |
-          echo "!.github/" >> .gitignore   # Ensure .github is always included
+          echo ".github/" >> .gitignore   # Ensure .github is always included
           cat .gitignore  # Debugging: Check if .github is included
 
       - name: Initialize New Git Repository
