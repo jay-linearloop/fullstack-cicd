@@ -40,3 +40,53 @@ jobs:
           git remote add origin $BITBUCKET_REPO
           git branch -M main
           git push -f origin main  # Force push to overwrite only main branch
+
+
+# Excluding some of the files from the sync process
+# name: Sync Source Code to Bitbucket
+
+# on:
+#   workflow_dispatch:  # Manual trigger (change if needed)
+
+# jobs:
+#   sync:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout the latest code
+#         uses: actions/checkout@v4
+#         with:
+#           ref: main
+
+#       - name: Remove Git History
+#         run: rm -rf .git
+
+#       - name: Create .gitignore to Exclude Files but Keep .github
+#         run: |
+#           echo "node_modules/" >> .gitignore
+#           echo ".env" >> .gitignore
+#           echo "dist/" >> .gitignore
+#           echo "*.log" >> .gitignore
+#           echo "secrets.json" >> .gitignore
+#           echo "!.github/" >> .gitignore   # Ensure .github is always included
+#           cat .gitignore  # Debugging: Check if .github is included
+
+#       - name: Initialize New Git Repository
+#         run: |
+#           git init
+#           git config user.name "GitHub CI/CD"
+#           git config user.email "ci@example.com"
+#           git add .
+#           git commit -m "Sync latest source code from GitHub"
+
+#       - name: Push to Existing Bitbucket Repo
+#         env:
+#           BITBUCKET_SSH_KEY: ${{ secrets.BITBUCKET_SSH_KEY }}
+#           BITBUCKET_REPO: "git@bitbucket.org:react-demo-test/github-to-bitbucket.git"
+#         run: |
+#           mkdir -p ~/.ssh
+#           echo "$BITBUCKET_SSH_KEY" > ~/.ssh/id_rsa
+#           chmod 600 ~/.ssh/id_rsa
+#           ssh-keyscan bitbucket.org >> ~/.ssh/known_hosts
+#           git remote add origin $BITBUCKET_REPO
+#           git branch -M main
+#           git push -f origin main  # Force push to overwrite only main branch
