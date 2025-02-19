@@ -65,7 +65,7 @@ jobs:
           jq -r '.issues[] | [.key, .component, .message, .severity, .type, .line] | @csv' sonar_report.json > sonar_report.csv
 
       - name: Upload SonarQube Report as Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # Updated from v3 to v4
         with:
           name: sonar_report
           path: sonar_report.csv
