@@ -61,7 +61,7 @@ jobs:
       - name: Download SonarQube Report
         run: |
           curl -u "${{ secrets.SONAR_USER }}:${{ secrets.SONAR_PASSWORD }}" \
-          "${{ secrets.SONAR_HOST_URL }}/api/issues/search?componentKeys=my_project" -o sonar_report.json
+          "${{ secrets.SONAR_HOST_URL }}/api/issues/search?componentKeys=test-github-code-review" -o sonar_report.json
           
           jq -r '.issues[] | [.key, .message, .severity, .type] | @csv' sonar_report.json > sonar_report.csv
 
