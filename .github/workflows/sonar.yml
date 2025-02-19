@@ -56,7 +56,7 @@ jobs:
           # Wait for analysis to complete
           sleep 10
           
-          PROJECT_KEY="${{ github.repository_owner }}-${{ github.repository }}"
+          PROJECT_KEY="fullstack-app"
           
           curl -u "${{ secrets.SONAR_TOKEN }}:" \
           "${{ secrets.SONAR_HOST_URL }}/api/issues/search?componentKeys=${PROJECT_KEY}&types=BUG,VULNERABILITY,CODE_SMELL&resolved=false" \
