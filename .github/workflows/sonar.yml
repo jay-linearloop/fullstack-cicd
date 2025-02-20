@@ -1,85 +1,85 @@
-name: Build
-
-on:
-  push:
-    branches:
-      - main
-
-
-jobs:
-  build:
-    name: Build and analyze
-    runs-on: self-hosted
-    
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - uses: SonarSource/sonarqube-scan-action@v4
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-      # If you wish to fail your job when the Quality Gate is red, uncomment the
-      # following lines. This would typically be used to fail a deployment.
-      # - uses: SonarSource/sonarqube-quality-gate-action@v1
-      #   timeout-minutes: 5
-      #   env:
-      #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-# name: Build and SonarQube Report
+# name: Build
 
 # on:
 #   push:
 #     branches:
 #       - main
 
+
 # jobs:
 #   build:
-#     name: Build and Analyze
-#     runs-on: ubuntu-latest
+#     name: Build and analyze
+#     runs-on: self-hosted
+    
 #     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v2
+#       - uses: actions/checkout@v4
 #         with:
-#           fetch-depth: 0
-
-#       - name: Run SonarQube Scan
-#         uses: sonarsource/sonarqube-scan-action@master
+#           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+#       - uses: SonarSource/sonarqube-scan-action@v4
 #         env:
 #           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 #           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+#       # If you wish to fail your job when the Quality Gate is red, uncomment the
+#       # following lines. This would typically be used to fail a deployment.
+#       # - uses: SonarSource/sonarqube-quality-gate-action@v1
+#       #   timeout-minutes: 5
+#       #   env:
+#       #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
-#       - name: Install jq
-#         run: sudo apt-get install -y jq
+name: Build and SonarQube Report
 
-#       - name: Download SonarQube Report
-#         run: |
-#           # Wait for analysis to complete
-#           sleep 10
-          
-#           # Simplify project key - remove the duplicate and slash
-#           PROJECT_KEY="fullstack-cicd"
-          
-#           # First look at what we're getting
-#           echo "Using project key: ${PROJECT_KEY}"
-          
-#           # Save the curl response and check its contents
-#           curl -u "${{ secrets.SONAR_TOKEN }}:" \
-#           "${{ secrets.SONAR_HOST_URL }}/api/issues/search?componentKeys=${PROJECT_KEY}&types=BUG,VULNERABILITY,CODE_SMELL&resolved=false" \
-#           -o sonar_report.json
-          
-#           # Print the first few lines of the response to see what we got
-#           echo "Response content:"
-#           head -n 5 sonar_report.json
-          
-#           # Try a simpler jq command first
-#           jq '.' sonar_report.json
-          
-#           # If that works, then try the full command
-#           jq -r '.issues[] | [.key, .component, .message, .severity, .type, .line] | @csv' sonar_report.json > sonar_report.csv
+on:
+  push:
+    branches:
+      - main
 
-#       - name: Upload SonarQube Report as Artifact
-#         uses: actions/upload-artifact@v4  # Updated from v3 to v4
-#         with:
-#           name: sonar_report
-#           path: sonar_report.csv
+jobs:
+  build:
+    name: Build and Analyze
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Run SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Install jq
+        run: sudo apt-get install -y jq
+
+      - name: Download SonarQube Report
+        run: |
+          # Wait for analysis to complete
+          sleep 10
+          
+          # Simplify project key - remove the duplicate and slash
+          PROJECT_KEY="test"
+          
+          # First look at what we're getting
+          echo "Using project key: ${PROJECT_KEY}"
+          
+          # Save the curl response and check its contents
+          curl -u "${{ secrets.SONAR_TOKEN }}:" \
+          "${{ secrets.SONAR_HOST_URL }}/api/issues/search?componentKeys=${PROJECT_KEY}&types=BUG,VULNERABILITY,CODE_SMELL&resolved=false" \
+          -o sonar_report.json
+          
+          # Print the first few lines of the response to see what we got
+          echo "Response content:"
+          head -n 5 sonar_report.json
+          
+          # Try a simpler jq command first
+          jq '.' sonar_report.json
+          
+          # If that works, then try the full command
+          jq -r '.issues[] | [.key, .component, .message, .severity, .type, .line] | @csv' sonar_report.json > sonar_report.csv
+
+      - name: Upload SonarQube Report as Artifact
+        uses: actions/upload-artifact@v4  # Updated from v3 to v4
+        with:
+          name: sonar_report
+          path: sonar_report.csv
